@@ -22,9 +22,9 @@ install:
   - git submodule update --init
   - virtualenv -p "%PYTHON%\\python.exe" "%VENV%"
   - "%VENV%\\Scripts\\activate"
+  - pip install -r requirements.test
   - pip install .
   - ps: Update-AppveyorBuild -Version "v$(python -c 'import sys; import altendpyqt5; sys.stdout.write(altendpyqt5.__version__)') b$Env:APPVEYOR_BUILD_NUMBER"
-  - pip install -r requirements.test
 
 build_script:
   - if defined BUILD_WHEEL python setup.py bdist_wheel
