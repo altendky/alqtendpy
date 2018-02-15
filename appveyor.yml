@@ -19,6 +19,7 @@ init:
   - echo "TOXENV- %TOXENV%"
 
 install:
+  - git submodule update --init
   - virtualenv -p "%PYTHON%\\python.exe" "%VENV%"
   - "%VENV%\\Scripts\\activate"
   - pip install .
