@@ -23,6 +23,7 @@ init:
 install:
   - git submodule update --init
   - virtualenv -p "%PYTHON%\\python.exe" "%VENV%"
+  - copy "%PYTHON%\\python3.dll" "%VENV%\\Scripts"
   - "%VENV%\\Scripts\\activate"
   - pip install -r requirements.test
   - pip install .
