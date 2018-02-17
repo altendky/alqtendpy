@@ -6,3 +6,4 @@ pytest-cov==2.5.1
 pytest-qt==2.3.1
 pytest-xvfb==1.1.0
 tox==3.0.0rc1
+virtualenv==git+https://github.com/pypa/virtualenv&e8163e83a92c9098f51d390289323232ece15e3b
