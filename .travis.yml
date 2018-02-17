@@ -2,11 +2,6 @@ language: python
 
 sudo: false
 
-addons:
-  apt:
-    packages:
-      - xvfb
-
 python:
   - 3.5
   - 3.6
