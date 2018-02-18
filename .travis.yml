@@ -17,5 +17,5 @@ install:
 
 script:
   - python setup.py bdist_wheel
-  - tox
+  - tox -vvvvvvvv
   - codecov
