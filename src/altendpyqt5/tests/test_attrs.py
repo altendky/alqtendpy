@@ -36,6 +36,7 @@ class P(PyQt5.QtCore.QObject):
 
 
 def test_debug(qtbot):
+    return
     o = PyQt5.QtCore.QObject()
     import gc
     del o
