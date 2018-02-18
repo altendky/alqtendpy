@@ -35,7 +35,7 @@ class P(PyQt5.QtCore.QObject):
         return altendpyqt5.attrs.properties_set(self, 'c', value)
 
 
-def test_debug():
+def test_debug(qtbot):
     return
     o = PyQt5.QtCore.QObject()
     import gc
