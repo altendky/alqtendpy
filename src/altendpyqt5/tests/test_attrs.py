@@ -37,6 +37,9 @@ class P(PyQt5.QtCore.QObject):
 
 def test_debug(qtbot):
     o = PyQt5.QtCore.QObject()
+    import gc
+    del o
+    gc.collect()
 
 def test_types(qtbot):
     p = P(a=1, b=2, c=3)
