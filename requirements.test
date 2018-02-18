@@ -1,5 +1,8 @@
 -r requirements.txt
 
+git+https://github.com/pypa/virtualenv@e8163e83a92c9098f51d390289323232ece15e3b
+git+https://github.com/tox-dev/tox@13beb8b09946a5f09721e4a3bfa0c488ccb4fecd
+
 codecov==2.0.5
 pytest==3.4.0
 pytest-cov==2.5.1
@@ -7,6 +10,3 @@ pytest-faulthandler==1.4.1
 pytest-qt==2.3.1
 pytest-xvfb==1.1.0
 tox==3.0.0rc1
-
-git+https://github.com/tox-dev/tox@13beb8b09946a5f09721e4a3bfa0c488ccb4fecd
-git+https://github.com/pypa/virtualenv@e8163e83a92c9098f51d390289323232ece15e3b
