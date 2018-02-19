@@ -1,7 +1,7 @@
 -r requirements.txt
 
+# https://github.com/pypa/virtualenv/issues/1050
 git+https://github.com/pypa/virtualenv@e8163e83a92c9098f51d390289323232ece15e3b
-git+https://github.com/tox-dev/tox@13beb8b09946a5f09721e4a3bfa0c488ccb4fecd
 
 codecov==2.0.5
 pytest==3.4.0

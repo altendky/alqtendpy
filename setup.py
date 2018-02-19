@@ -36,6 +36,7 @@ setuptools.setup(
             'pytest',
             'pytest-cov',
             'pytest-qt',
+            'pytest-xvfb',
             'tox',
         ],
         'dev': [
