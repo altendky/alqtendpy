@@ -1,7 +1,7 @@
 altendpyqt5
 ===========
 
-|PyPI| |Pythons| |Travis| |AppVeyor| |codecov|
+|PyPI| |Pythons| |Travis| |AppVeyor| |codecov| |GitHub|
 
 Miscellanious extras that I like to use when working with PyQt5.
 
@@ -24,3 +24,7 @@ Miscellanious extras that I like to use when working with PyQt5.
 .. |codecov| image:: https://codecov.io/gh/altendky/altendpyqt5/branch/develop/graph/badge.svg
    :alt: codecov coverage status
    :target: https://codecov.io/gh/altendky/altendpyqt5
+
+.. |GitHub| image:: https://img.shields.io/github/last-commit/altendky/altendpyqt5/develop.svg
+   :alt: Source on GitHub
+   :target: https://github.com/altendky/altendpyqt5
