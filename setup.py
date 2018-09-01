@@ -40,6 +40,11 @@ setuptools.setup(
             'pytest-xvfb',
             'tox',
         ],
+        'test_twisted': [
+            'pytest-twisted',
+            'qt5reactor',
+            'twisted',
+        ],
         'dev': [
             'gitignoreio',
         ],
