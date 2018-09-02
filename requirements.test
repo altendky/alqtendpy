@@ -1,12 +1,33 @@
 -r requirements.txt
 
-# https://github.com/pypa/virtualenv/issues/1050
-git+https://github.com/pypa/virtualenv@e8163e83a92c9098f51d390289323232ece15e3b
-
-codecov==2.0.5
-pytest==3.4.0
+atomicwrites==1.2.1
+Automat==0.7.0
+certifi==2018.8.24
+chardet==3.0.4
+codecov==2.0.15
+constantly==15.1.0
+coverage==4.5.1
+decorator==4.3.0
+EasyProcess==0.2.3
+greenlet==0.4.14
+hyperlink==18.0.0
+idna==2.7
+incremental==17.5.0
+more-itertools==4.3.0
+pluggy==0.7.1
+py==1.6.0
+PyHamcrest==1.9.0
+pytest==3.7.4
 pytest-cov==2.5.1
-pytest-faulthandler==1.4.1
-pytest-qt==2.3.1
+pytest-qt==3.0.2
+pytest-twisted==1.8
 pytest-xvfb==1.1.0
-tox==3.0.0rc1
+PyVirtualDisplay==0.2.1
+qt5reactor==0.5
+requests==2.19.1
+six==1.11.0
+tox==3.2.1
+Twisted==18.7.0
+urllib3==1.23
+virtualenv==16.0.0
+zope.interface==4.5.0

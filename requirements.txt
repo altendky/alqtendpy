@@ -1,5 +1,6 @@
--e sub/altendpy
+attrs==18.2.0
+PyQt5==5.11.2
+PyQt5-sip==4.19.12
 
-attrs==17.4.0
-pyqt5==5.10
-sip==4.19.7
+-e .
+-e sub/altendpy
