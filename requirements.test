@@ -23,7 +23,7 @@ pytest-qt==3.0.2
 pytest-twisted==1.8
 pytest-xvfb==1.1.0
 PyVirtualDisplay==0.2.1
-qt5reactor==0.5
+git+https://github.com/altendky/qt5reactor@a52c0d0c289c8e08680c0204974081c541504d41#egg=qt5reactor
 requests==2.19.1
 six==1.11.0
 tox==3.2.1
