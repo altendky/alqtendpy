@@ -43,8 +43,6 @@ async def async_await_for_signal_result():
 
     result = await altendpyqt5.twisted.signal_as_deferred(source.signal)
 
-    print('result:', result)
-
     assert result == source.args
 
 
