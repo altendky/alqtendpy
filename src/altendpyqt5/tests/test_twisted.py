@@ -1,5 +1,6 @@
 from PyQt5 import QtCore
 import pytest
+import twisted
 
 import altendpyqt5.twisted
 
@@ -38,3 +39,14 @@ def test_yield_for_signal_arguments(qtbot):
     result = yield altendpyqt5.twisted.signal_as_deferred(source.signal)
 
     assert result == arguments
+
+
+async def test_async_await_for_signal():
+    timer = singleshot_immediate_timer()
+
+    await altendpyqt5.twisted.signal_as_async(timer.timeout)
+
+
+@pytest.inlineCallbacks
+def test_await_for_signal():
+    yield twisted.internet.defer.ensureDeferred(test_async_await_for_signal())
