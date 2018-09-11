@@ -34,22 +34,23 @@ environment:
 
 
   matrix:
-    - TOXENV: py35-core
-      PYTHON: "C:\\Python35"
-    - TOXENV: py35-twisted
-      PYTHON: "C:\\Python35"
-    - TOXENV: py35-asyncio
-      PYTHON: "C:\\Python35"
-    - TOXENV: py35-wheel
-      PYTHON: "C:\\Python35"
-    - TOXENV: py35-core
-      PYTHON: "C:\\Python35-x64"
-    - TOXENV: py35-twisted
-      PYTHON: "C:\\Python35-x64"
-    - TOXENV: py35-asyncio
-      PYTHON: "C:\\Python35-x64"
-    - TOXENV: py35-wheel
-      PYTHON: "C:\\Python35-x64"
+#   It's 3.5.3 on AppVeyor for now which is too old for current Qt
+#    - TOXENV: py35-core
+#      PYTHON: "C:\\Python35"
+#    - TOXENV: py35-twisted
+#      PYTHON: "C:\\Python35"
+#    - TOXENV: py35-asyncio
+#      PYTHON: "C:\\Python35"
+#    - TOXENV: py35-wheel
+#      PYTHON: "C:\\Python35"
+#    - TOXENV: py35-core
+#      PYTHON: "C:\\Python35-x64"
+#    - TOXENV: py35-twisted
+#      PYTHON: "C:\\Python35-x64"
+#    - TOXENV: py35-asyncio
+#      PYTHON: "C:\\Python35-x64"
+#    - TOXENV: py35-wheel
+#      PYTHON: "C:\\Python35-x64"
     - TOXENV: py36-core
       PYTHON: "C:\\Python36"
     - TOXENV: py36-twisted
