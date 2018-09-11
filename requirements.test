@@ -30,7 +30,9 @@ git+https://github.com/altendky/qt5reactor@ce3ea2dad6d71adb10cde79b64bc0c7d27e91
 requests==2.19.1
 six==1.11.0
 tox==3.2.1
-Twisted==18.7.0
+Twisted==18.7.0; platform_system != "Windows" and platform_system != "Darwin"
+Twisted[osx_platform]==18.7.0; platform_system == "Darwin"
+Twisted[windows_platform]==18.7.0; platform_system == "Windows"
 urllib3==1.23
 virtualenv==16.0.0
 zope.interface==4.5.0
