@@ -18,15 +18,15 @@ env:
   - TOXENV=core
   - TOXENV=twisted
 #  - TOXENV=asyncio
+  - TOXENV=wheel
 
 install:
   - pip install tox-travis
   - python -m pip install -r requirements.test
 
 script:
-  - python setup.py bdist_wheel
   - tox -vvvvvvvv
-  - codecov
+  - tox -e codecov
 
 deploy:
   provider: pypi
