@@ -1,0 +1,45 @@
+version: 2
+
+jobs:
+  osx-python3.6:
+    macos:
+      xcode: "10.0.0"
+    environment:
+      PYTHON: python3.6
+    steps:
+      - checkout
+
+      - run:
+          name: Prepare the environment.
+          command: |
+            bash .circleci/prepare.sh
+      - run:
+          name: Test.
+          command: |
+            venv/bin/tox
+            venv/bin/tox -e codecov
+
+  linux-python3.6:
+    docker:
+      - image: circleci/python:3.6
+    environment:
+      PYTHON: python3.6
+    steps:
+      - checkout
+
+      - run:
+          name: Prepare the environment.
+          command: |
+            bash .circleci/prepare.sh
+      - run:
+          name: Test.
+          command: |
+            venv/bin/tox
+            venv/bin/tox -e codecov
+
+workflows:
+  version: 2
+  all-tests:
+    jobs:
+      - osx-python3.6
+      - linux-python3.6
