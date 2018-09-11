@@ -1,8 +1,6 @@
 skip_branch_with_pr: true
 
 environment:
-  VENV: "%APPVEYOR_BUILD_FOLDER%\\venv"
-
 # # matrix generated from
 # import itertools
 
@@ -19,7 +17,7 @@ environment:
 #     return 'py{}{}-{}'.format(*python, mode)
 
 # def get_python(python, bitness, mode):
-#     return '"C:\\Python{}{}{}"'.format(
+#     return '"C:\\\\Python{}{}{}"'.format(
 #         *python,
 #         {32: '', 64:'-x64'}[bitness],
 #     )
@@ -37,37 +35,37 @@ environment:
 
   matrix:
     - TOXENV: py35-core
-      PYTHON: "C:\Python35"
+      PYTHON: "C:\\Python35"
     - TOXENV: py35-twisted
-      PYTHON: "C:\Python35"
+      PYTHON: "C:\\Python35"
     - TOXENV: py35-asyncio
-      PYTHON: "C:\Python35"
+      PYTHON: "C:\\Python35"
     - TOXENV: py35-wheel
-      PYTHON: "C:\Python35"
+      PYTHON: "C:\\Python35"
     - TOXENV: py35-core
-      PYTHON: "C:\Python35-x64"
+      PYTHON: "C:\\Python35-x64"
     - TOXENV: py35-twisted
-      PYTHON: "C:\Python35-x64"
+      PYTHON: "C:\\Python35-x64"
     - TOXENV: py35-asyncio
-      PYTHON: "C:\Python35-x64"
+      PYTHON: "C:\\Python35-x64"
     - TOXENV: py35-wheel
-      PYTHON: "C:\Python35-x64"
+      PYTHON: "C:\\Python35-x64"
     - TOXENV: py36-core
-      PYTHON: "C:\Python36"
+      PYTHON: "C:\\Python36"
     - TOXENV: py36-twisted
-      PYTHON: "C:\Python36"
+      PYTHON: "C:\\Python36"
     - TOXENV: py36-asyncio
-      PYTHON: "C:\Python36"
+      PYTHON: "C:\\Python36"
     - TOXENV: py36-wheel
-      PYTHON: "C:\Python36"
+      PYTHON: "C:\\Python36"
     - TOXENV: py36-core
-      PYTHON: "C:\Python36-x64"
+      PYTHON: "C:\\Python36-x64"
     - TOXENV: py36-twisted
-      PYTHON: "C:\Python36-x64"
+      PYTHON: "C:\\Python36-x64"
     - TOXENV: py36-asyncio
-      PYTHON: "C:\Python36-x64"
+      PYTHON: "C:\\Python36-x64"
     - TOXENV: py36-wheel
-      PYTHON: "C:\Python36-x64"
+      PYTHON: "C:\\Python36-x64"
 
 # https://www.appveyor.com/docs/how-to/rdp-to-build-worker/
 init:
@@ -76,8 +74,8 @@ init:
 
 install:
   - git submodule update --init
-  - virtualenv -p "%PYTHON%\\python.exe" "%VENV%"
-  - "%VENV%\\Scripts\\activate"
+  - virtualenv -p "%PYTHON%\\python.exe" venv
+  - venv\\Scripts\\activate
   - pip install -r requirements.test
   - pip install .
   - ps: Update-AppveyorBuild -Version "v$(python -c 'import sys; import altendpyqt5; sys.stdout.write(altendpyqt5.__version__)') b$Env:APPVEYOR_BUILD_NUMBER"
