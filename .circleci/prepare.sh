@@ -1,3 +1,4 @@
+git submodule update --init
 $PYTHON --version
 $PYTHON -m pip --version
 $PYTHON -m pip install -q --user --ignore-installed --upgrade virtualenv
