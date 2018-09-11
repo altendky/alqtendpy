@@ -13,7 +13,11 @@ addons:
 python:
   - 3.5
   - 3.6
-  - 3.7
+
+env:
+  - TOXENV=core
+  - TOXENV=twisted
+#  - TOXENV=asyncio
 
 install:
   - pip install tox-travis
