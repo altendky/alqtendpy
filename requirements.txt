@@ -2,5 +2,5 @@ attrs==18.2.0
 PyQt5==5.11.2
 PyQt5-sip==4.19.12
 
--e .
+-e .[test]
 -e sub/altendpy
