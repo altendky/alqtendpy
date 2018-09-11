@@ -198,7 +198,7 @@ def test_(qtbot):
     signals['a']
 
 
-def test_resolve_index_to_model():
+def _test_resolve_index_to_model():
     model = PyQt5.QtCore.QStringListModel()
 
     back_proxy = PyQt5.QtCore.QSortFilterProxyModel()

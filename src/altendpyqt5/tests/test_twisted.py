@@ -5,6 +5,9 @@ import altendpyqt5.tests.utils
 import altendpyqt5.twisted
 
 
+pytestmark = pytest.mark.twisted
+
+
 @pytest.inlineCallbacks
 def test_yield_for_signal(qtbot):
     timer = altendpyqt5.tests.utils.singleshot_immediate_timer()

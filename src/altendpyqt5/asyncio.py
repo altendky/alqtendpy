@@ -1,12 +1,6 @@
 import asyncio
 
 import attr
-import pytest
-
-
-pytestmark = pytest.mark.skip(
-    "Need new test setup to handle both Twisted and asyncio",
-)
 
 
 @attr.s
