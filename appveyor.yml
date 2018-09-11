@@ -1,7 +1,7 @@
+skip_branch_with_pr: true
+
 environment:
   VENV: "%APPVEYOR_BUILD_FOLDER%\\venv"
-
-skip_branch_with_pr: true
 
 # # matrix generated from
 # import itertools
