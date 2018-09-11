@@ -38,6 +38,7 @@ with open('README.rst') as f:
                 'pytest-qt',
                 'pytest-twisted',
                 'pytest-xvfb',
+                'quamash',
                 'qt5reactor',
                 'tox',
                 'twisted',

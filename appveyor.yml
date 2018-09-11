@@ -9,7 +9,7 @@ environment:
 # parameters = (
 #     ('python', ((3,5), (3,6))),
 #     ('bitness', (32, 64)),
-#     ('mode', ('core', 'twisted', 'wheel')),
+#     ('mode', ('core', 'twisted', 'asyncio', 'wheel')),
 # )
 
 # parameter_names = [p[0] for p in parameters]
@@ -34,28 +34,37 @@ environment:
 #     print('    - TOXENV: {}'.format(toxenv))
 #     print('      PYTHON: {}'.format(python))
 
+
   matrix:
     - TOXENV: py35-core
       PYTHON: "C:\Python35"
     - TOXENV: py35-twisted
+      PYTHON: "C:\Python35"
+    - TOXENV: py35-asyncio
       PYTHON: "C:\Python35"
     - TOXENV: py35-wheel
       PYTHON: "C:\Python35"
     - TOXENV: py35-core
       PYTHON: "C:\Python35-x64"
     - TOXENV: py35-twisted
+      PYTHON: "C:\Python35-x64"
+    - TOXENV: py35-asyncio
       PYTHON: "C:\Python35-x64"
     - TOXENV: py35-wheel
       PYTHON: "C:\Python35-x64"
     - TOXENV: py36-core
       PYTHON: "C:\Python36"
     - TOXENV: py36-twisted
+      PYTHON: "C:\Python36"
+    - TOXENV: py36-asyncio
       PYTHON: "C:\Python36"
     - TOXENV: py36-wheel
       PYTHON: "C:\Python36"
     - TOXENV: py36-core
       PYTHON: "C:\Python36-x64"
     - TOXENV: py36-twisted
+      PYTHON: "C:\Python36-x64"
+    - TOXENV: py36-asyncio
       PYTHON: "C:\Python36-x64"
     - TOXENV: py36-wheel
       PYTHON: "C:\Python36-x64"

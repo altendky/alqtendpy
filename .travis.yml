@@ -17,7 +17,7 @@ python:
 env:
   - TOXENV=core
   - TOXENV=twisted
-#  - TOXENV=asyncio
+  - TOXENV=asyncio
   - TOXENV=wheel
 
 install:

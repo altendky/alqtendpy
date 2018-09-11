@@ -9,21 +9,17 @@ class AsyncForSignal:
     future = attr.ib(factory=asyncio.Future)
 
     def connect(self):
-        print('AsyncForSignal.connect()', self.future.get_loop())
         self.future.add_done_callback(self.cancelled)
         self.signal.connect(self.slot)
 
     def disconnect(self):
-        print('AsyncForSignal.disconnect()')
         self.signal.disconnect(self.slot)
         self.future.remove_done_callback(self.cancelled)
 
     def cancelled(self, future):
-        print('AsyncForSignal.cancel()')
         self.disconnect()
 
     def slot(self, *args):
-        print('AsyncForSignal.slot()')
         self.disconnect()
         self.future.set_result(args)
 
