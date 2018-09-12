@@ -13,14 +13,14 @@ def event_loop(qapp):
 
 
 @pytest.mark.asyncio
-async def test_async_await_for_signal(qapp):
+async def test_await_for_signal(qapp):
     timer = altendpyqt5.tests.utils.singleshot_immediate_timer()
 
     await altendpyqt5.asyncio.signal_as_future(timer.timeout)
 
 
 @pytest.mark.asyncio
-async def test_async_await_for_signal_result(qapp):
+async def test_await_for_signal_result(qapp):
     source = altendpyqt5.tests.utils.Source(args=('hi', 42))
 
     timer = altendpyqt5.tests.utils.singleshot_immediate_timer()
@@ -32,7 +32,7 @@ async def test_async_await_for_signal_result(qapp):
 
 
 @pytest.mark.asyncio
-async def test_async_await_immediate_signal_manual():
+async def test_await_immediate_signal_manual():
     source = altendpyqt5.tests.utils.Source(args=('hi', 42))
 
     d = altendpyqt5.asyncio.signal_as_future(source.signal)
@@ -43,7 +43,7 @@ async def test_async_await_immediate_signal_manual():
 
 
 @pytest.mark.asyncio
-async def test_async_await_immediate_signal_integrated():
+async def test_await_immediate_signal_integrated():
     source = altendpyqt5.tests.utils.Source(args=('hi', 42))
 
     result = await altendpyqt5.asyncio.signal_as_future(
