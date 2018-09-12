@@ -1,3 +1,5 @@
+import decorator
+from PyQt5 import QtCore
 import pytest
 import twisted
 
@@ -53,4 +55,39 @@ async def async_await_for_signal_result():
 def test_await_for_signal_result():
     yield twisted.internet.defer.ensureDeferred(
         async_await_for_signal_result(),
+    )
+
+
+async def async_await_immediate_signal_manual():
+    source = altendpyqt5.tests.utils.Source(args=('hi', 42))
+
+    d = altendpyqt5.twisted.signal_as_deferred(source.signal)
+    source.emit()
+    result = await d
+
+    assert result == source.args
+
+
+@pytest.inlineCallbacks
+def test_async_await_immediate_signal_manual():
+    yield twisted.internet.defer.ensureDeferred(
+        async_await_immediate_signal_manual(),
+    )
+
+
+async def async_await_immediate_signal_integrated():
+    source = altendpyqt5.tests.utils.Source(args=('hi', 42))
+
+    result = await altendpyqt5.twisted.signal_as_deferred(
+        signal=source.signal,
+        f=source.emit,
+    )
+
+    assert result == source.args
+
+
+@pytest.inlineCallbacks
+def test_async_await_immediate_signal_integrated():
+    yield twisted.internet.defer.ensureDeferred(
+        async_await_immediate_signal_integrated(),
     )

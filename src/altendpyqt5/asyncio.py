@@ -24,8 +24,11 @@ class AsyncForSignal:
         self.future.set_result(args)
 
 
-def signal_as_async(signal):
+def signal_as_future(signal, f=None, *args, **kwargs):
     afs = AsyncForSignal(signal=signal)
     afs.connect()
+
+    if f is not None:
+        f(*args, **kwargs)
 
     return afs.future
