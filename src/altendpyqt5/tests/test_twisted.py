@@ -1,4 +1,3 @@
-import decorator
 import pytest
 import twisted
 
@@ -10,7 +9,6 @@ pytestmark = pytest.mark.twisted
 
 
 # https://github.com/pytest-dev/pytest-twisted/issues/31
-@decorator.decorator
 def asyncCallbacks(f, *args, **kwargs):
     @pytest.inlineCallbacks
     def wrapper(*args, **kwargs):
