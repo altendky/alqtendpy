@@ -1,4 +1,3 @@
-import decorator
 from PyQt5 import QtCore
 import pytest
 import twisted
