@@ -1,3 +1,4 @@
+import decorator
 import pytest
 import twisted
 
@@ -9,12 +10,10 @@ pytestmark = pytest.mark.twisted
 
 
 # https://github.com/pytest-dev/pytest-twisted/issues/31
-def asyncCallbacks(f, *args, **kwargs):
-    @pytest.inlineCallbacks
-    def wrapper(*args, **kwargs):
-        yield twisted.internet.defer.ensureDeferred(f())
+@decorator.decorator
+def asyncCallbacks(fun, *args, **kw):
+    return twisted.internet.defer.ensureDeferred(fun(*args, **kw))
 
-    return wrapper
 
 
 @pytest.inlineCallbacks
