@@ -1,11 +1,12 @@
 version: 2
 
 jobs:
-  osx-python3.6:
+  osx-py35:
     macos:
       xcode: "10.0.0"
     environment:
       PYTHON: python3
+      TOXENV: py35
     steps:
       - checkout
 
@@ -19,11 +20,88 @@ jobs:
             venv/bin/tox
             venv/bin/tox -e codecov
 
-  linux-python3.6:
+  osx-py36:
+    macos:
+      xcode: "10.0.0"
+    environment:
+      PYTHON: python3
+      TOXENV: py36
+    steps:
+      - checkout
+
+      - run:
+          name: Prepare the environment.
+          command: |
+            bash .circleci/prepare.sh
+      - run:
+          name: Test.
+          command: |
+            venv/bin/tox
+            venv/bin/tox -e codecov
+
+  osx-py37:
+    macos:
+      xcode: "10.0.0"
+    environment:
+      PYTHON: python3
+      TOXENV: py37
+    steps:
+      - checkout
+
+      - run:
+          name: Prepare the environment.
+          command: |
+            bash .circleci/prepare.sh
+      - run:
+          name: Test.
+          command: |
+            venv/bin/tox
+            venv/bin/tox -e codecov
+
+  linux-py35:
+    docker:
+      - image: circleci/python:3.5
+    environment:
+      PYTHON: python3
+      TOXENV: py35
+    steps:
+      - checkout
+
+      - run:
+          name: Prepare the environment.
+          command: |
+            bash .circleci/prepare.sh
+      - run:
+          name: Test.
+          command: |
+            venv/bin/tox
+            venv/bin/tox -e codecov
+
+  linux-py36:
     docker:
       - image: circleci/python:3.6
     environment:
       PYTHON: python3
+      TOXENV: py36
+    steps:
+      - checkout
+
+      - run:
+          name: Prepare the environment.
+          command: |
+            bash .circleci/prepare.sh
+      - run:
+          name: Test.
+          command: |
+            venv/bin/tox
+            venv/bin/tox -e codecov
+
+  linux-py37:
+    docker:
+      - image: circleci/python:3.7
+    environment:
+      PYTHON: python3
+      TOXENV: py37
     steps:
       - checkout
 
@@ -41,5 +119,9 @@ workflows:
   version: 2
   all-tests:
     jobs:
-      - osx-python3.6
-      - linux-python3.6
+      - osx-py35
+      - osx-py36
+      - osx-py37
+      - linux-py35
+      - linux-py36
+      - linux-py37
