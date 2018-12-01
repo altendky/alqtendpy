@@ -18,7 +18,7 @@ env:
   - TOXENV=core
   - TOXENV=twisted
   - TOXENV=asyncio
-  - TOXENV=wheel
+  - TOXENV=dist-
 
 install:
   - pip install tox-travis
