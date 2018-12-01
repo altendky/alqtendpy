@@ -51,6 +51,7 @@ commands:
             venv/bin/python --version
             venv/bin/pip --version
             venv/bin/pip install tox
+            git submodule update --init
 
   run_test:
     steps:
