@@ -26,7 +26,10 @@ pytest-twisted==1.8
 pytest-xvfb==1.1.0
 PyVirtualDisplay==0.2.1
 quamash==0.6.1
-git+https://github.com/altendky/qt5reactor@ce3ea2dad6d71adb10cde79b64bc0c7d27e9139c#egg=qt5reactor
+#git+https://github.com/altendky/qt5reactor@ce3ea2dad6d71adb10cde79b64bc0c7d27e9139c#egg=qt5reactor
+#git+https://github.com/sunu/qt5reactor#egg=qt5reactor
+#qt5reactor==0.5
+/home/altendky/qt5reactor
 requests==2.19.1
 six==1.11.0
 tox==3.2.1

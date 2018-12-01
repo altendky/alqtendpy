@@ -40,23 +40,17 @@ environment:
       PYTHON: "C:\\Python35"
     - TOXENV: py35-asyncio
       PYTHON: "C:\\Python35"
-    - TOXENV: py35-wheel
-      PYTHON: "C:\\Python35"
     - TOXENV: py35-core
       PYTHON: "C:\\Python35-x64"
     - TOXENV: py35-twisted
       PYTHON: "C:\\Python35-x64"
     - TOXENV: py35-asyncio
       PYTHON: "C:\\Python35-x64"
-    - TOXENV: py35-wheel
-      PYTHON: "C:\\Python35-x64"
     - TOXENV: py36-core
       PYTHON: "C:\\Python36"
     - TOXENV: py36-twisted
       PYTHON: "C:\\Python36"
     - TOXENV: py36-asyncio
-      PYTHON: "C:\\Python36"
-    - TOXENV: py36-wheel
       PYTHON: "C:\\Python36"
     - TOXENV: py36-core
       PYTHON: "C:\\Python36-x64"
@@ -64,7 +58,7 @@ environment:
       PYTHON: "C:\\Python36-x64"
     - TOXENV: py36-asyncio
       PYTHON: "C:\\Python36-x64"
-    - TOXENV: py36-wheel
+    - TOXENV: dist-
       PYTHON: "C:\\Python36-x64"
 
 # https://www.appveyor.com/docs/how-to/rdp-to-build-worker/
