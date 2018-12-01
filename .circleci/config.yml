@@ -54,10 +54,10 @@ commands:
       - run:
           name: Test
           command: |
-            venv/bin/tox $TOXENV-core
-            venv/bin/tox $TOXENV-twisted
-            venv/bin/tox $TOXENV-asyncio
-            venv/bin/tox $TOXENV-wheel
+            venv/bin/tox -e $TOXENV-core
+            venv/bin/tox -e $TOXENV-twisted
+            venv/bin/tox -e $TOXENV-asyncio
+            venv/bin/tox -e $TOXENV-wheel
       - run:
           name: Codecov
           command: |
