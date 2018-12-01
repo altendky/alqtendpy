@@ -138,41 +138,41 @@ workflows:
           <<: *dist_arguments
 
       - linux:
-          name: linux-py35-pyqt5
+          name: linux-py35-pyqt5-core
           <<: *py35_arguments
           part: core
       - linux:
-          name: linux-py35-pyqt5
+          name: linux-py35-pyqt5-twisted
           <<: *py35_arguments
           part: twisted
       - linux:
-          name: linux-py35-pyqt5
+          name: linux-py35-pyqt5-asyncio
           <<: *py35_arguments
           part: asyncio
 
       - linux:
-          name: linux-py36-pyqt5
+          name: linux-py36-pyqt5-core
           <<: *py36_arguments
           part: core
       - linux:
-          name: linux-py36-pyqt5
+          name: linux-py36-pyqt5-twisted
           <<: *py36_arguments
           part: twisted
       - linux:
-          name: linux-py36-pyqt5
+          name: linux-py36-pyqt5-asyncio
           <<: *py36_arguments
           part: asyncio
 
       - linux:
-          name: linux-py37-pyqt5
+          name: linux-py37-pyqt5-core
           <<: *py37_arguments
           part: core
       - linux:
-          name: linux-py37-pyqt5
+          name: linux-py37-pyqt5-twisted
           <<: *py37_arguments
           part: twisted
       - linux:
-          name: linux-py37-pyqt5
+          name: linux-py37-pyqt5-asyncio
           <<: *py37_arguments
           part: asyncio
 
@@ -181,40 +181,40 @@ workflows:
           <<: *dist_arguments
 
       - osx:
-          name: osx-py35-pyqt5
+          name: osx-py35-pyqt5-core
           <<: *py35_arguments
           part: core
       - osx:
-          name: osx-py35-pyqt5
+          name: osx-py35-pyqt5-twisted
           <<: *py35_arguments
           part: twisted
       - osx:
-          name: osx-py35-pyqt5
+          name: osx-py35-pyqt5-asyncio
           <<: *py35_arguments
           part: asyncio
 
       - osx:
-          name: osx-py36-pyqt5
+          name: osx-py36-pyqt5-core
           <<: *py36_arguments
           part: core
       - osx:
-          name: osx-py36-pyqt5
+          name: osx-py36-pyqt5-twisted
           <<: *py36_arguments
           part: twisted
       - osx:
-          name: osx-py36-pyqt5
+          name: osx-py36-pyqt5-asyncio
           <<: *py36_arguments
           part: asyncio
 
       - osx:
-          name: osx-py37-pyqt5
+          name: osx-py37-pyqt5-core
           <<: *py37_arguments
           part: core
       - osx:
-          name: osx-py37-pyqt5
+          name: osx-py37-pyqt5-twisted
           <<: *py37_arguments
           part: twisted
       - osx:
-          name: osx-py37-pyqt5
+          name: osx-py37-pyqt5-asyncio
           <<: *py37_arguments
           part: asyncio
