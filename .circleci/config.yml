@@ -12,6 +12,7 @@ aliases:
         type: string
       part:
         type: string
+        default: ""
 
   - &py35_arguments
       name: py35
