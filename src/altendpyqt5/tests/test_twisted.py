@@ -75,3 +75,27 @@ async def test_await_immediate_signal_integrated():
     )
 
     assert result == source.args
+
+
+@asyncCallbacks
+async def test_await_immediate_signal_decorator_direct():
+    source = altendpyqt5.tests.utils.Source(args=('hi', 42))
+
+    @altendpyqt5.twisted.a(source.signal)
+    def f():
+        source.emit()
+
+    result = await f()
+
+    assert result == source.args
+
+
+@asyncCallbacks
+async def test_await_immediate_signal_decorator_lambda():
+    source = altendpyqt5.tests.utils.Source(args=('hi', 42))
+
+    result = await altendpyqt5.twisted.a(source.signal)(
+        lambda: source.emit(),
+    )()
+
+    assert result == source.args

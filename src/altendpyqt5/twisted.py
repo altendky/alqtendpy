@@ -36,3 +36,13 @@ def signal_as_deferred(signal, f=None, *args, **kwargs):
         f(*args, **kwargs)
 
     return dfs.deferred
+
+
+def a(signal):
+    def inner(f):
+        def wrapper(*args, **kwargs):
+            return signal_as_deferred(signal=signal, f=f, *args, **kwargs)
+
+        return wrapper
+
+    return inner

@@ -15,7 +15,7 @@ def singleshot_immediate_timer():
 class Source(QtCore.QObject):
     signal = QtCore.pyqtSignal(str, int)
 
-    args = attr.ib()
+    args = attr.ib(default=())
 
     def __attrs_post_init__(self):
         super().__init__()
