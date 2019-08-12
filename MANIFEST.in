@@ -1,2 +1,2 @@
 include versioneer.py
-include src/altendpyqt5/_version.py
+include src/alqtendpy/_version.py

@@ -7,11 +7,11 @@ import pytest
 import PyQt5.QtCore
 import PyQt5.QtWidgets
 
-import altendpyqt5.attrs
-import altendpyqt5.models
+import alqtendpy.attrs
+import alqtendpy.models
 
 
-@altendpyqt5.attrs.as_properties()
+@alqtendpy.attrs.as_properties()
 @attr.s
 class P(PyQt5.QtCore.QObject):
     a = attr.ib()
@@ -25,14 +25,14 @@ class P(PyQt5.QtCore.QObject):
 
     @PyQt5.QtCore.pyqtProperty('PyQt_PyObject')
     def pyqtify_c(self):
-        x = altendpyqt5.attrs.properties_get(self, 'c')
+        x = alqtendpy.attrs.properties_get(self, 'c')
         self.get = True
         return x
 
     @pyqtify_c.setter
     def pyqtify_c(self, value):
         self.set = True
-        return altendpyqt5.attrs.properties_set(self, 'c', value)
+        return alqtendpy.attrs.properties_set(self, 'c', value)
 
 
 def test_debug(qtbot):
@@ -83,7 +83,7 @@ def test_overall(qtbot):
     fields = attr.fields(P)
     assert len(fields) == len(values)
 
-    signals = altendpyqt5.attrs.properties_signals(p)
+    signals = alqtendpy.attrs.properties_signals(p)
     for name, v in values.items():
         getattr(signals, name).connect(v.collect)
 
@@ -119,7 +119,7 @@ def test_independence(qtbot):
     assert(attr.asdict(b) == bd)
 
 
-@altendpyqt5.attrs.as_properties()
+@alqtendpy.attrs.as_properties()
 @attr.s
 class Q(PyQt5.QtCore.QObject):
     a = attr.ib()
@@ -132,7 +132,7 @@ class Q(PyQt5.QtCore.QObject):
 
     @PyQt5.QtCore.pyqtProperty('PyQt_PyObject')
     def pyqtify_b(self):
-        return altendpyqt5.attrs.properties_get(self, 'b')
+        return alqtendpy.attrs.properties_get(self, 'b')
 
     @pyqtify_b.setter
     def pyqtify_b(self, value):
@@ -140,7 +140,7 @@ class Q(PyQt5.QtCore.QObject):
         if value < self.a:
             self.a = value
 
-        altendpyqt5.attrs.properties_set(self, 'b', value)
+        alqtendpy.attrs.properties_set(self, 'b', value)
 
 
 def test_property_cross_effect(qtbot):
@@ -161,7 +161,7 @@ def test_property_cross_effect(qtbot):
     fields = attr.fields(Q)
     assert len(fields) == len(values)
 
-    signals = altendpyqt5.attrs.properties_signals(p)
+    signals = alqtendpy.attrs.properties_signals(p)
     for name, v in values.items():
         getattr(signals, name).connect(v.collect)
 
@@ -189,7 +189,7 @@ def test_pyqtified_module():
 def test_(qtbot):
     q = Q(a=1, b=2)
 
-    signals = altendpyqt5.attrs.properties_signals(q)
+    signals = alqtendpy.attrs.properties_signals(q)
 
     # TODO: Actually assert they are 'the same'.  Until we know how to
     #       just access them to make sure they are available
@@ -214,7 +214,7 @@ def _test_resolve_index_to_model():
     view.setModel(proxy)
 
     assert (
-        altendpyqt5.models.resolve_models(view)
+        alqtendpy.models.resolve_models(view)
         == [proxy, middle_proxy, back_proxy, model]
     )
 
@@ -231,14 +231,14 @@ def _test_resolve_index_to_model():
 
     assert target_data == 'a'
 
-    with pytest.raises(altendpyqt5.models.TargetModelNotReached):
-        altendpyqt5.models.resolve_index_to_model(
+    with pytest.raises(alqtendpy.models.TargetModelNotReached):
+        alqtendpy.models.resolve_index_to_model(
             view=view,
             index=proxy_first_index,
             target=object(),
         )
 
-    index, found_model = altendpyqt5.models.resolve_index_to_model(
+    index, found_model = alqtendpy.models.resolve_index_to_model(
         view=view,
         index=proxy_first_index,
     )
@@ -248,7 +248,7 @@ def _test_resolve_index_to_model():
     assert found_data == target_data
     assert found_model == model
 
-    proxy_index = altendpyqt5.models.resolve_index_from_model(
+    proxy_index = alqtendpy.models.resolve_index_from_model(
         model=model,
         view=view,
         index=model_first_index,
@@ -261,12 +261,12 @@ def _test_resolve_index_to_model():
 
 
 def test_attrs_no_recurse_in_init():
-    @altendpyqt5.attrs.as_properties()
+    @alqtendpy.attrs.as_properties()
     @attr.s
     class Child:
         a = attr.ib(default=42)
 
-    @altendpyqt5.attrs.as_properties()
+    @alqtendpy.attrs.as_properties()
     @attr.s
     class Parent:
         child = attr.ib(default=attr.Factory(Child))

@@ -1,13 +1,13 @@
 import altendpy.tests.common
 import PyQt5.QtCore
 
-import altendpyqt5.core
+import alqtendpy.core
 
 
 def test_signal_independence():
     class C:
-        a = altendpyqt5.core.Signal(int)
-        b = altendpyqt5.core.Signal(int)
+        a = alqtendpy.core.Signal(int)
+        b = alqtendpy.core.Signal(int)
 
     value_checkers = {
         'a': altendpy.tests.common.Values(
@@ -36,8 +36,8 @@ def test_signal_independence():
 
 def test_signal_chaining():
     class C:
-        a = altendpyqt5.core.Signal(int)
-        b = altendpyqt5.core.Signal(int)
+        a = alqtendpy.core.Signal(int)
+        b = alqtendpy.core.Signal(int)
 
     input = [1, 2, 3]
 
@@ -69,7 +69,7 @@ def test_signal_chaining():
 
 def test_signal_to_pyqtslot():
     class Signal:
-        signal = altendpyqt5.core.Signal()
+        signal = alqtendpy.core.Signal()
 
     class Slot(PyQt5.QtCore.QObject):
         @PyQt5.QtCore.pyqtSlot()
@@ -84,7 +84,7 @@ def test_signal_to_pyqtslot():
 
 # def test_signal_repr():
 #     class C:
-#         signal = altendpyqt5.core.Signal()
+#         signal = alqtendpy.core.Signal()
 #
 #     c = C()
 #

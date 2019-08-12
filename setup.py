@@ -6,7 +6,7 @@ import versioneer
 with open('README.rst') as f:
     readme = f.read()
     setuptools.setup(
-        name='altendpyqt5',
+        name='alqtendpy',
         version = versioneer.get_version(),
         cmdclass = versioneer.get_cmdclass(),
         description="Extras for working with PyQt5.",
@@ -14,7 +14,7 @@ with open('README.rst') as f:
         long_description_content_type='text/x-rst',
         author='Kyle Altendorf',
         author_email='sda@fstab.net',
-        url='https://github.com/altendky/altendpyqt5',
+        url='https://github.com/altendky/alqtendpy',
         packages=setuptools.find_packages('src'),
         package_dir={'': 'src'},
         classifiers=[

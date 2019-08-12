@@ -2,8 +2,8 @@ import decorator
 import pytest
 import twisted
 
-import altendpyqt5.tests.utils
-import altendpyqt5.twisted
+import alqtendpy.tests.utils
+import alqtendpy.twisted
 
 
 pytestmark = pytest.mark.twisted
@@ -18,47 +18,47 @@ def asyncCallbacks(fun, *args, **kw):
 
 @pytest.inlineCallbacks
 def test_yield_for_signal(qtbot):
-    timer = altendpyqt5.tests.utils.singleshot_immediate_timer()
+    timer = alqtendpy.tests.utils.singleshot_immediate_timer()
 
-    yield altendpyqt5.twisted.signal_as_deferred(timer.timeout)
+    yield alqtendpy.twisted.signal_as_deferred(timer.timeout)
 
 
 @pytest.inlineCallbacks
 def test_yield_for_signal_arguments(qtbot):
-    source = altendpyqt5.tests.utils.Source(args=('hi', 42))
+    source = alqtendpy.tests.utils.Source(args=('hi', 42))
 
-    timer = altendpyqt5.tests.utils.singleshot_immediate_timer()
+    timer = alqtendpy.tests.utils.singleshot_immediate_timer()
     timer.timeout.connect(source.emit)
 
-    result = yield altendpyqt5.twisted.signal_as_deferred(source.signal)
+    result = yield alqtendpy.twisted.signal_as_deferred(source.signal)
 
     assert result == source.args
 
 
 @asyncCallbacks
 async def test_await_for_signal():
-    timer = altendpyqt5.tests.utils.singleshot_immediate_timer()
+    timer = alqtendpy.tests.utils.singleshot_immediate_timer()
 
-    await altendpyqt5.twisted.signal_as_deferred(timer.timeout)
+    await alqtendpy.twisted.signal_as_deferred(timer.timeout)
 
 
 @asyncCallbacks
 async def test_await_for_signal_result():
-    source = altendpyqt5.tests.utils.Source(args=('hi', 42))
+    source = alqtendpy.tests.utils.Source(args=('hi', 42))
 
-    timer = altendpyqt5.tests.utils.singleshot_immediate_timer()
+    timer = alqtendpy.tests.utils.singleshot_immediate_timer()
     timer.timeout.connect(source.emit)
 
-    result = await altendpyqt5.twisted.signal_as_deferred(source.signal)
+    result = await alqtendpy.twisted.signal_as_deferred(source.signal)
 
     assert result == source.args
 
 
 @asyncCallbacks
 async def test_await_immediate_signal_manual():
-    source = altendpyqt5.tests.utils.Source(args=('hi', 42))
+    source = alqtendpy.tests.utils.Source(args=('hi', 42))
 
-    d = altendpyqt5.twisted.signal_as_deferred(source.signal)
+    d = alqtendpy.twisted.signal_as_deferred(source.signal)
     source.emit()
     result = await d
 
@@ -67,9 +67,9 @@ async def test_await_immediate_signal_manual():
 
 @asyncCallbacks
 async def test_await_immediate_signal_integrated():
-    source = altendpyqt5.tests.utils.Source(args=('hi', 42))
+    source = alqtendpy.tests.utils.Source(args=('hi', 42))
 
-    result = await altendpyqt5.twisted.signal_as_deferred(
+    result = await alqtendpy.twisted.signal_as_deferred(
         signal=source.signal,
         f=source.emit,
     )

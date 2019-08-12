@@ -77,7 +77,7 @@ install:
   - virtualenv -p "%PYTHON%\\python.exe" venv
   - venv\\Scripts\\activate
   - pip install -r requirements.test
-  - ps: Update-AppveyorBuild -Version "v$(python -c 'import sys; import altendpyqt5; sys.stdout.write(altendpyqt5.__version__)') b$Env:APPVEYOR_BUILD_NUMBER"
+  - ps: Update-AppveyorBuild -Version "v$(python -c 'import sys; import alqtendpy; sys.stdout.write(alqtendpy.__version__)') b$Env:APPVEYOR_BUILD_NUMBER"
 
 build_script:
   - tox -vvvvvvvv
