@@ -25,8 +25,14 @@ with open('README.rst') as f:
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6',
         ],
+        entry_points={
+            'console_scripts': [
+                'compileui = alqtendpy.cli.compileui:cli',
+            ],
+        },
         install_requires=[
             'altendpy',
+            'click',
             'attrs',
             'pyqt5',
         ],
