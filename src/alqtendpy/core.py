@@ -1,6 +1,16 @@
+import contextlib
+
 from PyQt5 import QtCore
 
 import altendpy.misc
+
+
+class AlqtendpyException(Exception):
+    pass
+
+
+class UserCancelledError(AlqtendpyException):
+    pass
 
 
 # class SignalWrapper(PyQt5.QtCore.pyqtBoundSignal):
@@ -89,3 +99,12 @@ class Connections:
     def disconnect(self):
         for slot in self.slots:
             self.signal.disconnect(slot)
+
+
+@contextlib.contextmanager
+def connection(signal, slot):
+    this_connection = signal.connect(slot)
+    try:
+        yield this_connection
+    finally:
+        signal.disconnect(this_connection)

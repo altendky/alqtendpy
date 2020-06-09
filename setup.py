@@ -37,16 +37,21 @@ with open('README.rst') as f:
             'pyqt5',
         ],
         extras_require={
+            'trio': [
+                'outcome',
+            ],
             'test': [
                 'codecov',
                 'pytest',
                 'pytest-cov',
                 'pytest-qt',
+                'pytest-trio',
                 'pytest-twisted',
                 'pytest-xvfb',
                 'quamash',
                 'qt5reactor',
                 'tox',
+                'trio',
                 'twisted',
             ],
             'dev': [
