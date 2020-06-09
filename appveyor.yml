@@ -56,6 +56,8 @@ environment:
       PYTHON: "C:\\Python36"
     - TOXENV: py36-asyncio
       PYTHON: "C:\\Python36"
+    - TOXENV: py36-trio
+      PYTHON: "C:\\Python36"
     - TOXENV: py36-wheel
       PYTHON: "C:\\Python36"
     - TOXENV: py36-core
@@ -63,6 +65,8 @@ environment:
     - TOXENV: py36-twisted
       PYTHON: "C:\\Python36-x64"
     - TOXENV: py36-asyncio
+      PYTHON: "C:\\Python36-x64"
+    - TOXENV: py36-trio
       PYTHON: "C:\\Python36-x64"
     - TOXENV: py36-wheel
       PYTHON: "C:\\Python36-x64"
