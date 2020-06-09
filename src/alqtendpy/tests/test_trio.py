@@ -9,6 +9,9 @@ import alqtendpy.core
 import alqtendpy.trio
 
 
+pytestmark = pytest.mark.twisted
+
+
 def test_reenter_event_triggers_in_main_thread(qapp):
     result = []
 
