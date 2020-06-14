@@ -1,5 +1,6 @@
 import contextlib
 import functools
+import sys
 import traceback
 import typing
 
@@ -7,6 +8,7 @@ import attr
 import outcome
 import PyQt5.QtCore
 import PyQt5.QtWidgets
+import pytest
 import trio
 
 import alqtendpy.core
@@ -46,20 +48,37 @@ async def wait_signal(signal: PyQt5.QtCore.pyqtBoundSignal) -> typing.Any:
     return result
 
 
+def run(async_fn):
+    runner = Runner(async_fn=async_fn)
+    runner.run()
+
+    return runner.outcomes
+
+
+@attr.s(auto_attribs=True)
+class Outcomes:
+    qt: typing.Optional[outcome.Outcome] = None
+    trio: typing.Optional[outcome.Outcome] = None
+
+
 @attr.s(auto_attribs=True)
 class Runner:
     async_fn: typing.Callable[
         [PyQt5.QtWidgets.QApplication],
         typing.Awaitable[None],
     ]
+
     done_callback: typing.Optional[
         typing.Callable[[outcome.Error], None]
     ] = attr.ib(default=None)
+
     application: PyQt5.QtWidgets.QApplication = attr.ib(
-        factory=PyQt5.QtWidgets.QApplication,
+        factory=lambda: PyQt5.QtWidgets.QApplication(sys.argv),
     )
+
     reenter: Reenter = attr.ib(factory=Reenter)
     manage_application_lifetime: bool = True
+    outcomes: Outcomes = attr.ib(factory=Outcomes)
 
     def run(self, *args, **kwargs):
         done_callback = (
@@ -77,9 +96,19 @@ class Runner:
         )
 
         if self.manage_application_lifetime:
-            return self.application.exec()
+            result = self.application.exec()
+            if result == 0:
+                self.outcomes = attr.evolve(
+                    self.outcomes,
+                    qt=outcome.Value(result),
+                )
+            else:
+                self.outcomes = attr.evolve(
+                    self.outcomes,
+                    qt=outcome.Error(result),
+                )
 
-        return None
+        return self.outcomes
 
     def run_sync_soon_threadsafe(self, fn):
         event = ReenterEvent(REENTER_EVENT)
@@ -95,6 +124,10 @@ class Runner:
                 return await self.async_fn(*args, **kwargs)
 
     def trio_done(self, main_outcome):
+        # raise Exception('alsjflksadflkjdsakfs')
+        self.outcomes = attr.evolve(self.outcomes, trio=main_outcome)
+
+        # TODO: should stuff be reported here?  configurable by caller?
         print('---', repr(main_outcome))
         if isinstance(main_outcome, outcome.Error):
             exc = main_outcome.error
@@ -189,6 +222,7 @@ class IntegerDialog:
 def welcomes_qt(test_function):
     timeout = 3000
 
+    @pytest.mark.usefixtures('qapp', 'qtbot')
     @functools.wraps(test_function)
     def wrapper(*args, **kwargs):
         request = kwargs['request']
@@ -203,7 +237,7 @@ def welcomes_qt(test_function):
             nonlocal result
             result = main_outcome
 
-        runner = alqtendpy.trio.Runner(
+        runner = alqtendpy.qtrio.Runner(
             async_fn=test_function,
             application=qapp,
             done_callback=done_callback,
