@@ -34,30 +34,11 @@ def test_reenter_event_triggers_in_main_thread(qapp):
     assert result == [threading.get_ident()]
 
 
-# @pytest.fixture(name='test_runner')
-# def _test_runner_fixture(testdir):
-#
-#
-# def test_stuff(testdir):
-#     testdir.runpytest(timeout=timeout)
-
-# @pytest.fixture
-# def cmd_opts(request):
-#     reactor = request.config.getoption("reactor", "default")
-#     return (
-#         sys.executable,
-#         "-m",
-#         "pytest",
-#         "-v",
-#         "--reactor={}".format(reactor),
-#     )
-
-
 timeout = 3
 
 
 def test_run_returns_value(testdir):
-    test_file = """
+    test_file = r"""
     import outcome
     from alqtendpy import qtrio
 
@@ -98,7 +79,7 @@ def test_qt_quit_cancels_trio(testdir):
     
         outcomes = qtrio.run(async_fn=main)
     
-        assert outcomes.trio == outcome.Value(None)
+        assert outcomes.trio.value == None
     """
     testdir.makepyfile(test_file)
 
@@ -107,7 +88,7 @@ def test_qt_quit_cancels_trio(testdir):
 
 
 def test_run_runs_in_main_thread(testdir):
-    test_file = """
+    test_file = r"""
     import threading
 
     from alqtendpy import qtrio
@@ -127,7 +108,7 @@ def test_run_runs_in_main_thread(testdir):
 
 
 def test_runner_runs_in_main_thread(testdir):
-    test_file = """
+    test_file = r"""
     import threading
 
     from alqtendpy import qtrio
