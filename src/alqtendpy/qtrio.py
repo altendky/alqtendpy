@@ -48,8 +48,8 @@ async def wait_signal(signal: PyQt5.QtCore.pyqtBoundSignal) -> typing.Any:
     return result
 
 
-def run(async_fn):
-    runner = Runner(async_fn=async_fn)
+def run(async_fn, done_callback=None):
+    runner = Runner(async_fn=async_fn, done_callback=done_callback)
     runner.run()
 
     return runner.outcomes
@@ -69,7 +69,7 @@ class Runner:
     ]
 
     done_callback: typing.Optional[
-        typing.Callable[[outcome.Error], None]
+        typing.Callable[[Outcomes], None]
     ] = attr.ib(default=None)
 
     application: PyQt5.QtWidgets.QApplication = attr.ib(
@@ -81,18 +81,12 @@ class Runner:
     outcomes: Outcomes = attr.ib(factory=Outcomes)
 
     def run(self, *args, **kwargs):
-        done_callback = (
-            self.trio_done
-            if self.done_callback is None
-            else self.done_callback
-        )
-
         trio.lowlevel.start_guest_run(
             self.trio_main,
             args,
             kwargs,
             run_sync_soon_threadsafe=self.run_sync_soon_threadsafe,
-            done_callback=done_callback,
+            done_callback=self.trio_done,
         )
 
         if self.manage_application_lifetime:
@@ -124,7 +118,6 @@ class Runner:
                 return await self.async_fn(*args, **kwargs)
 
     def trio_done(self, main_outcome):
-        # raise Exception('alsjflksadflkjdsakfs')
         self.outcomes = attr.evolve(self.outcomes, trio=main_outcome)
 
         # TODO: should stuff be reported here?  configurable by caller?
@@ -132,6 +125,9 @@ class Runner:
         if isinstance(main_outcome, outcome.Error):
             exc = main_outcome.error
             traceback.print_exception(type(exc), exc, exc.__traceback__)
+
+        if self.done_callback is not None:
+            self.done_callback(self.outcomes)
 
         if self.manage_application_lifetime:
             self.application.quit()
@@ -230,12 +226,15 @@ def welcomes_qt(test_function):
         qapp = request.getfixturevalue('qapp')
         qtbot = request.getfixturevalue('qtbot')
 
-        result_sentinel = outcome.Value(29)
-        result = result_sentinel
+        test_outcomes_sentinel = Outcomes(
+            qt=outcome.Value(0),
+            trio=outcome.Value(29),
+        )
+        test_outcomes = test_outcomes_sentinel
 
-        def done_callback(main_outcome):
-            nonlocal result
-            result = main_outcome
+        def done_callback(outcomes):
+            nonlocal test_outcomes
+            test_outcomes = outcomes
 
         runner = alqtendpy.qtrio.Runner(
             async_fn=test_function,
@@ -248,11 +247,14 @@ def welcomes_qt(test_function):
 
         def result_ready():
             message = f'test not finished within {timeout/1000} seconds'
-            assert result is not result_sentinel, message
+            assert test_outcomes is not test_outcomes_sentinel, message
 
         qtbot.wait_until(result_ready, timeout=timeout)
 
-        result.unwrap()
+        if isinstance(test_outcomes.trio, outcome.Error):
+            test_outcomes.trio.unwrap()
+        elif isinstance(test_outcomes.qt, outcome.Error):
+            test_outcomes.qt.unwrap()
 
     return wrapper
 

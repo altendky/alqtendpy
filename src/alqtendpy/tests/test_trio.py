@@ -65,20 +65,20 @@ def test_qt_quit_cancels_trio(testdir):
     import PyQt5.QtCore
     from alqtendpy import qtrio
     import trio
-    
-    
+
+
     def test():
         async def main():
             PyQt5.QtCore.QTimer.singleShot(
                 100,
                 PyQt5.QtCore.QCoreApplication.instance().lastWindowClosed.emit,
             )
-    
+
             while True:
                 await trio.sleep(1)
-    
+
         outcomes = qtrio.run(async_fn=main)
-    
+
         assert outcomes.trio.value == None
     """
     testdir.makepyfile(test_file)
@@ -117,11 +117,63 @@ def test_runner_runs_in_main_thread(testdir):
     def test():
         async def main():
             return threading.get_ident()
-    
+
         runner = qtrio.Runner(async_fn=main)
         outcomes = runner.run()
-    
+
         assert outcomes.trio.value == threading.get_ident()
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_done_callback_runs_in_main_thread(testdir):
+    test_file = r"""
+    import threading
+
+    from alqtendpy import qtrio
+
+    def test():
+        result = {}
+
+        async def main():
+            pass
+
+        def done_callback(outcomes):
+            result['thread_id'] = threading.get_ident()
+
+        qtrio.run(async_fn=main, done_callback=done_callback)
+
+        assert result['thread_id'] == threading.get_ident()
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_done_callback_gets_outcomes(testdir):
+    test_file = r"""
+    import outcome
+    from alqtendpy import qtrio
+
+    def test():
+        result = {}
+
+        async def main():
+            return 93
+
+        def done_callback(outcomes):
+            result['outcomes'] = outcomes
+
+        qtrio.run(async_fn=main, done_callback=done_callback)
+
+        assert result['outcomes'] == qtrio.Outcomes(
+            qt=None,
+            trio=outcome.Value(93),
+        )
     """
     testdir.makepyfile(test_file)
 
