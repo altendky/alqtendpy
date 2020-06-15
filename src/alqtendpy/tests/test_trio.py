@@ -1,12 +1,11 @@
 import threading
 
-import outcome
 import PyQt5.QtCore
 import pytest
 import trio
 
 import alqtendpy.core
-import alqtendpy.qtrio
+from alqtendpy import qtrio
 
 
 pytestmark = pytest.mark.twisted
@@ -15,10 +14,10 @@ pytestmark = pytest.mark.twisted
 def test_reenter_event_triggers_in_main_thread(qapp):
     result = []
 
-    reenter = alqtendpy.qtrio.Reenter()
+    reenter = qtrio.Reenter()
 
     def post():
-        event = alqtendpy.qtrio.ReenterEvent(alqtendpy.qtrio.REENTER_EVENT)
+        event = qtrio.ReenterEvent(qtrio.REENTER_EVENT)
         event.fn = handler
         qapp.postEvent(reenter, event)
 
@@ -118,8 +117,8 @@ def test_runner_runs_in_main_thread(testdir):
         async def main():
             return threading.get_ident()
 
-        runner = qtrio.Runner(async_fn=main)
-        outcomes = runner.run()
+        runner = qtrio.Runner()
+        outcomes = runner.run(main)
 
         assert outcomes.trio.value == threading.get_ident()
     """
@@ -181,13 +180,13 @@ def test_done_callback_gets_outcomes(testdir):
     result.assert_outcomes(passed=1)
 
 
-@alqtendpy.qtrio.welcomes_qt
+@qtrio.host
 async def test_get_integer_gets_value(request, qtbot):
-    dialog = alqtendpy.qtrio.IntegerDialog.build()
+    dialog = qtrio.IntegerDialog.build()
     dialog.shown.connect(qtbot.addWidget)
 
     async def user(task_status):
-        async with alqtendpy.qtrio.signal_event_manager(dialog.shown):
+        async with qtrio.signal_event_manager(dialog.shown):
             task_status.started()
 
         qtbot.keyClicks(dialog.edit_widget, str(test_value))
@@ -202,13 +201,13 @@ async def test_get_integer_gets_value(request, qtbot):
     assert integer == test_value
 
 
-@alqtendpy.qtrio.welcomes_qt
+@qtrio.host
 async def test_get_integer_raises_cancel_when_canceled(request, qtbot):
-    dialog = alqtendpy.qtrio.IntegerDialog.build()
+    dialog = qtrio.IntegerDialog.build()
     dialog.shown.connect(qtbot.addWidget)
 
     async def user(task_status):
-        async with alqtendpy.qtrio.signal_event_manager(dialog.shown):
+        async with qtrio.signal_event_manager(dialog.shown):
             task_status.started()
 
         qtbot.keyClicks(dialog.edit_widget, 'abc')
@@ -220,20 +219,20 @@ async def test_get_integer_raises_cancel_when_canceled(request, qtbot):
             await dialog.wait()
 
 
-@alqtendpy.qtrio.welcomes_qt
+@qtrio.host
 async def test_get_integer_gets_value_after_retry(request, qtbot):
-    dialog = alqtendpy.qtrio.IntegerDialog.build()
+    dialog = qtrio.IntegerDialog.build()
     dialog.shown.connect(qtbot.addWidget)
 
     test_value = 928
 
     async def user(task_status):
-        async with alqtendpy.qtrio.signal_event_manager(dialog.shown):
+        async with qtrio.signal_event_manager(dialog.shown):
             task_status.started()
 
         qtbot.keyClicks(dialog.edit_widget, 'abc')
 
-        async with alqtendpy.qtrio.signal_event_manager(dialog.shown):
+        async with qtrio.signal_event_manager(dialog.shown):
             qtbot.mouseClick(dialog.ok_button, PyQt5.QtCore.Qt.LeftButton)
 
         qtbot.keyClicks(dialog.edit_widget, str(test_value))
@@ -247,6 +246,6 @@ async def test_get_integer_gets_value_after_retry(request, qtbot):
 
 
 @pytest.mark.xfail(reason='this is supposed to fail', strict=True)
-@alqtendpy.qtrio.welcomes_qt
+@qtrio.host
 async def test_times_out(request):
     await trio.sleep(10)

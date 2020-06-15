@@ -7,6 +7,7 @@ import typing
 import attr
 import outcome
 import PyQt5.QtCore
+import PyQt5.QtGui
 import PyQt5.QtWidgets
 import pytest
 import trio
@@ -17,6 +18,18 @@ import alqtendpy.core
 REENTER_EVENT = PyQt5.QtCore.QEvent.Type(
     PyQt5.QtCore.QEvent.registerEventType(),
 )
+
+
+class QTrioException(Exception):
+    pass
+
+
+class NoOutcomesError(QTrioException):
+    pass
+
+
+class ReturnCodeError(QTrioException):
+    pass
 
 
 class ReenterEvent(PyQt5.QtCore.QEvent):
@@ -48,59 +61,124 @@ async def wait_signal(signal: PyQt5.QtCore.pyqtBoundSignal) -> typing.Any:
     return result
 
 
-def run(async_fn, done_callback=None):
-    runner = Runner(async_fn=async_fn, done_callback=done_callback)
-    runner.run()
+@attr.s(auto_attribs=True, frozen=True, slots=True)
+class Outcomes:
+    """This class holds the :class:`outcomes.Outcome`s of both the Trio and the Qt
+    application execution.
+
+    Args:
+        qt: The Qt application :class:`outcomes.Outcome`
+        trio: The Trio async function :class:`outcomes.Outcome`
+    """
+    qt: typing.Optional[outcome.Outcome] = None
+    trio: typing.Optional[outcome.Outcome] = None
+
+    def unwrap(self):
+        """Unwrap either the Trio or Qt outcome.  First, errors are given priority over
+        success values.  Second, the Trio outcome gets priority over the Qt outcome.  If
+        both are still None a :class:`NoOutcomesError` is raised.
+        """
+
+        if self.trio is not None:
+            # highest priority to the Trio outcome, if it is an error we are done
+            result = self.trio.unwrap()
+
+            # since a Trio result is higher priority, we only care if Qt gave an error
+            if self.qt is not None:
+                self.qt.unwrap()
+
+            # no Qt error so go ahead and return the Trio result
+            return result
+        elif self.qt is not None:
+            # either it is a value that gets returned or an error that gets raised
+            return self.qt.unwrap()
+
+        # neither Trio nor Qt outcomes have been set so we have nothing to unwrap()
+        raise NoOutcomesError()
+
+
+def run(async_fn, done_callback=None) -> Outcomes:
+    """Run a Trio-flavored async function in guest mode on a Qt host application, and
+    return the outcomes.
+
+    Returns:
+        The :class:`Outcomes` with both the Trio and Qt outcomes.
+    """
+    runner = Runner(done_callback=done_callback)
+    runner.run(async_fn)
 
     return runner.outcomes
 
 
-@attr.s(auto_attribs=True)
-class Outcomes:
-    qt: typing.Optional[outcome.Outcome] = None
-    trio: typing.Optional[outcome.Outcome] = None
+def outcome_from_application_return_code(return_code: int) -> outcome.Outcome:
+    """Create either an :class:`outcome.Value` in the case of a 0 `return_code` or an
+    :class:`outcome.Error` with a :class:`ReturnCodeError` otherwise.
+
+    Args:
+        return_code: The return code to be processed.
+    """
+
+    if return_code == 0:
+        return outcome.Value(return_code)
+
+    return outcome.Error(ReturnCodeError(return_code))
 
 
-@attr.s(auto_attribs=True)
+@attr.s(auto_attribs=True, slots=True)
 class Runner:
-    async_fn: typing.Callable[
-        [PyQt5.QtWidgets.QApplication],
-        typing.Awaitable[None],
-    ]
+    """This class helps run Trio in guest mode on a Qt host application.
+
+    Args:
+
+        application: The Qt application object to run as the host.
+        quit_application: When true, the builtin :meth:`done_callback` method will quit
+            the application when the async function passed to :meth:`run` has completed.
+        reenter: The `QObject` instance which will receive the events requesting
+            execution of the needed Trio and user code in the host's event loop and
+            thread.
+        done_callback: The builtin :meth:`done_callback` will be passed to
+            :func:`trio.lowlevel.start_guest_run` but will call the callback passed here
+            before (maybe) quitting the application.  The :class:`outcome.Outcome` from
+            the completion of the async function passed to :meth:`run` will be passed to
+            this callback.
+    """
+    application: PyQt5.QtGui.QGuiApplication = attr.ib(
+        factory=lambda: PyQt5.QtWidgets.QApplication(sys.argv),
+    )
+    quit_application: bool = True
+
+    reenter: Reenter = attr.ib(factory=Reenter)
 
     done_callback: typing.Optional[
         typing.Callable[[Outcomes], None]
     ] = attr.ib(default=None)
 
-    application: PyQt5.QtWidgets.QApplication = attr.ib(
-        factory=lambda: PyQt5.QtWidgets.QApplication(sys.argv),
-    )
+    outcomes: Outcomes = attr.ib(factory=Outcomes, init=False)
 
-    reenter: Reenter = attr.ib(factory=Reenter)
-    manage_application_lifetime: bool = True
-    outcomes: Outcomes = attr.ib(factory=Outcomes)
-
-    def run(self, *args, **kwargs):
+    def run(
+            self,
+            async_fn: typing.Callable[
+                [PyQt5.QtWidgets.QApplication],
+                typing.Awaitable[None],
+            ],
+            *args,
+            execute_application: bool = True,
+    ):
         trio.lowlevel.start_guest_run(
             self.trio_main,
+            async_fn,
             args,
-            kwargs,
             run_sync_soon_threadsafe=self.run_sync_soon_threadsafe,
             done_callback=self.trio_done,
         )
 
-        if self.manage_application_lifetime:
-            result = self.application.exec()
-            if result == 0:
-                self.outcomes = attr.evolve(
-                    self.outcomes,
-                    qt=outcome.Value(result),
-                )
-            else:
-                self.outcomes = attr.evolve(
-                    self.outcomes,
-                    qt=outcome.Error(result),
-                )
+        if execute_application:
+            return_code = self.application.exec()
+
+            self.outcomes = attr.evolve(
+                self.outcomes,
+                qt=outcome_from_application_return_code(return_code),
+            )
 
         return self.outcomes
 
@@ -109,27 +187,27 @@ class Runner:
         event.fn = fn
         self.application.postEvent(self.reenter, event)
 
-    async def trio_main(self, args, kwargs):
+    async def trio_main(self, async_fn, args):
         with trio.CancelScope() as cancel_scope:
             with alqtendpy.core.connection(
                     signal=self.application.lastWindowClosed,
                     slot=cancel_scope.cancel,
             ):
-                return await self.async_fn(*args, **kwargs)
+                return await async_fn(*args)
 
-    def trio_done(self, main_outcome):
-        self.outcomes = attr.evolve(self.outcomes, trio=main_outcome)
+    def trio_done(self, run_outcome):
+        self.outcomes = attr.evolve(self.outcomes, trio=run_outcome)
 
         # TODO: should stuff be reported here?  configurable by caller?
-        print('---', repr(main_outcome))
-        if isinstance(main_outcome, outcome.Error):
-            exc = main_outcome.error
+        print('---', repr(run_outcome))
+        if isinstance(run_outcome, outcome.Error):
+            exc = run_outcome.error
             traceback.print_exception(type(exc), exc, exc.__traceback__)
 
         if self.done_callback is not None:
             self.done_callback(self.outcomes)
 
-        if self.manage_application_lifetime:
+        if self.quit_application:
             self.application.quit()
 
 
@@ -172,7 +250,7 @@ class IntegerDialog:
             if None not in widgets:
                 break
         else:
-            raise alqtendpy.core.AlqtendpyException('not all widgets found')
+            raise QTrioException('not all widgets found')
 
         if self.attempt is None:
             self.attempt = 0
@@ -215,7 +293,7 @@ class IntegerDialog:
             return self.result
 
 
-def welcomes_qt(test_function):
+def host(test_function):
     timeout = 3000
 
     @pytest.mark.usefixtures('qapp', 'qtbot')
@@ -237,24 +315,25 @@ def welcomes_qt(test_function):
             test_outcomes = outcomes
 
         runner = alqtendpy.qtrio.Runner(
-            async_fn=test_function,
             application=qapp,
             done_callback=done_callback,
-            manage_application_lifetime=False,
+            quit_application=False,
         )
 
-        runner.run(*args, **kwargs)
+        runner.run(
+            functools.partial(test_function, **kwargs),
+            *args,
+            execute_application=False,
+        )
 
         def result_ready():
             message = f'test not finished within {timeout/1000} seconds'
             assert test_outcomes is not test_outcomes_sentinel, message
 
+        # TODO: probably increases runtime of fast tests a lot due to polling
         qtbot.wait_until(result_ready, timeout=timeout)
 
-        if isinstance(test_outcomes.trio, outcome.Error):
-            test_outcomes.trio.unwrap()
-        elif isinstance(test_outcomes.qt, outcome.Error):
-            test_outcomes.qt.unwrap()
+        test_outcomes.unwrap()
 
     return wrapper
 
