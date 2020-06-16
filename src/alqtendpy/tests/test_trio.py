@@ -6,7 +6,9 @@ import trio
 
 import alqtendpy.core
 from alqtendpy import qtrio
-
+import alqtendpy.qtrio.dialogs
+# import qtrio.dialogs
+from alqtendpy import pytest_qtrio
 
 pytestmark = pytest.mark.twisted
 
@@ -180,9 +182,9 @@ def test_done_callback_gets_outcomes(testdir):
     result.assert_outcomes(passed=1)
 
 
-@qtrio.host
+@pytest_qtrio.host
 async def test_get_integer_gets_value(request, qtbot):
-    dialog = qtrio.IntegerDialog.build()
+    dialog = qtrio.dialogs.IntegerDialog.build()
     dialog.shown.connect(qtbot.addWidget)
 
     async def user(task_status):
@@ -201,9 +203,9 @@ async def test_get_integer_gets_value(request, qtbot):
     assert integer == test_value
 
 
-@qtrio.host
+@pytest_qtrio.host
 async def test_get_integer_raises_cancel_when_canceled(request, qtbot):
-    dialog = qtrio.IntegerDialog.build()
+    dialog = qtrio.dialogs.IntegerDialog.build()
     dialog.shown.connect(qtbot.addWidget)
 
     async def user(task_status):
@@ -219,9 +221,9 @@ async def test_get_integer_raises_cancel_when_canceled(request, qtbot):
             await dialog.wait()
 
 
-@qtrio.host
+@pytest_qtrio.host
 async def test_get_integer_gets_value_after_retry(request, qtbot):
-    dialog = qtrio.IntegerDialog.build()
+    dialog = qtrio.dialogs.IntegerDialog.build()
     dialog.shown.connect(qtbot.addWidget)
 
     test_value = 928
@@ -246,6 +248,6 @@ async def test_get_integer_gets_value_after_retry(request, qtbot):
 
 
 @pytest.mark.xfail(reason='this is supposed to fail', strict=True)
-@qtrio.host
+@pytest_qtrio.host
 async def test_times_out(request):
     await trio.sleep(10)

@@ -1,5 +1,4 @@
 import contextlib
-import functools
 import sys
 import traceback
 import typing
@@ -9,7 +8,6 @@ import outcome
 import PyQt5.QtCore
 import PyQt5.QtGui
 import PyQt5.QtWidgets
-import pytest
 import trio
 
 import alqtendpy.core
@@ -209,133 +207,6 @@ class Runner:
 
         if self.quit_application:
             self.application.quit()
-
-
-@attr.s(auto_attribs=True)
-class IntegerDialog:
-    parent: PyQt5.QtWidgets.QWidget
-    dialog: typing.Optional[PyQt5.QtWidgets.QInputDialog] = None
-    edit_widget: typing.Optional[PyQt5.QtWidgets.QWidget] = None
-    ok_button: typing.Optional[PyQt5.QtWidgets.QPushButton] = None
-    cancel_button: typing.Optional[PyQt5.QtWidgets.QPushButton] = None
-    attempt: typing.Optional[int] = None
-    result: typing.Optional[int] = None
-
-    shown = alqtendpy.core.Signal(PyQt5.QtWidgets.QInputDialog)
-    hidden = alqtendpy.core.Signal()
-
-    @classmethod
-    def build(
-            cls,
-            parent: PyQt5.QtCore.QObject = None,
-    ) -> 'IntegerDialog':
-        return cls(parent=parent)
-
-    def setup(self):
-        self.dialog = PyQt5.QtWidgets.QInputDialog(self.parent)
-
-        # TODO: find a better way to trigger population of widgets
-        self.dialog.show()
-
-        for widget in self.dialog.findChildren(PyQt5.QtWidgets.QWidget):
-            if isinstance(widget, PyQt5.QtWidgets.QLineEdit):
-                self.edit_widget = widget
-            elif isinstance(widget, PyQt5.QtWidgets.QPushButton):
-                if widget.text() == self.dialog.okButtonText():
-                    self.ok_button = widget
-                elif widget.text() == self.dialog.cancelButtonText():
-                    self.cancel_button = widget
-
-            widgets = {self.edit_widget, self.ok_button, self.cancel_button}
-            if None not in widgets:
-                break
-        else:
-            raise QTrioException('not all widgets found')
-
-        if self.attempt is None:
-            self.attempt = 0
-        else:
-            self.attempt += 1
-
-        self.shown.emit(self.dialog)
-
-    def teardown(self):
-        self.edit_widget = None
-        self.ok_button = None
-        self.cancel_button = None
-
-        if self.dialog is not None:
-            self.dialog.hide()
-            self.dialog = None
-            self.hidden.emit()
-
-    @contextlib.contextmanager
-    def manager(self):
-        try:
-            self.setup()
-            yield
-        finally:
-            self.teardown()
-
-    async def wait(self) -> int:
-        while True:
-            with self.manager():
-                [result] = await wait_signal(self.dialog.finished)
-
-                if result == PyQt5.QtWidgets.QDialog.Rejected:
-                    raise alqtendpy.core.UserCancelledError()
-
-                try:
-                    self.result = int(self.dialog.textValue())
-                except ValueError:
-                    continue
-
-            return self.result
-
-
-def host(test_function):
-    timeout = 3000
-
-    @pytest.mark.usefixtures('qapp', 'qtbot')
-    @functools.wraps(test_function)
-    def wrapper(*args, **kwargs):
-        request = kwargs['request']
-
-        qapp = request.getfixturevalue('qapp')
-        qtbot = request.getfixturevalue('qtbot')
-
-        test_outcomes_sentinel = Outcomes(
-            qt=outcome.Value(0),
-            trio=outcome.Value(29),
-        )
-        test_outcomes = test_outcomes_sentinel
-
-        def done_callback(outcomes):
-            nonlocal test_outcomes
-            test_outcomes = outcomes
-
-        runner = alqtendpy.qtrio.Runner(
-            application=qapp,
-            done_callback=done_callback,
-            quit_application=False,
-        )
-
-        runner.run(
-            functools.partial(test_function, **kwargs),
-            *args,
-            execute_application=False,
-        )
-
-        def result_ready():
-            message = f'test not finished within {timeout/1000} seconds'
-            assert test_outcomes is not test_outcomes_sentinel, message
-
-        # TODO: probably increases runtime of fast tests a lot due to polling
-        qtbot.wait_until(result_ready, timeout=timeout)
-
-        test_outcomes.unwrap()
-
-    return wrapper
 
 
 def signal_event(signal: PyQt5.QtCore.pyqtBoundSignal) -> trio.Event:
