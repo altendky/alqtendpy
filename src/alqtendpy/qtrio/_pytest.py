@@ -43,7 +43,12 @@ def host(test_function):
             assert test_outcomes is not test_outcomes_sentinel, message
 
         # TODO: probably increases runtime of fast tests a lot due to polling
-        qtbot.wait_until(result_ready, timeout=timeout)
+        try:
+            qtbot.wait_until(result_ready, timeout=timeout)
+        except AssertionError:
+            runner.cancel_scope.cancel()
+            qtbot.wait_until(result_ready)
+            raise
 
         test_outcomes.unwrap()
 

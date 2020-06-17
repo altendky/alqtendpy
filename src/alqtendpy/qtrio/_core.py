@@ -152,6 +152,7 @@ class Runner:
     ] = attr.ib(default=None)
 
     outcomes: Outcomes = attr.ib(factory=Outcomes, init=False)
+    cancel_scope: trio.CancelScope = attr.ib(default=None, init=False)
 
     def run(
             self,
@@ -186,10 +187,10 @@ class Runner:
         self.application.postEvent(self.reenter, event)
 
     async def trio_main(self, async_fn, args):
-        with trio.CancelScope() as cancel_scope:
+        with trio.CancelScope() as self.cancel_scope:
             with alqtendpy.core.connection(
                     signal=self.application.lastWindowClosed,
-                    slot=cancel_scope.cancel,
+                    slot=self.cancel_scope.cancel,
             ):
                 return await async_fn(*args)
 
