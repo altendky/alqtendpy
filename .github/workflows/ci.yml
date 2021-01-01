@@ -1,0 +1,143 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - "*"
+  schedule:
+    # Daily at 07:13
+    - cron: '13 7 * * *'
+
+jobs:
+  tasks:
+    name: ${{ matrix.task.name }} ${{ matrix.os.name }} ${{ matrix.python.name }} ${{ matrix.reactor.name }}
+    runs-on: ${{ matrix.os.runs-on }}
+    container: ${{ matrix.os.container[matrix.python.docker] }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - name: Linux
+            runs-on: ubuntu-latest
+            python_platform: linux
+            container:
+              3.5: docker://python:3.5-buster
+              3.6: docker://python:3.6-buster
+              3.7: docker://python:3.7-buster
+              3.8: docker://python:3.8-buster
+              3.9: docker://python:3.9-buster
+          - name: Windows
+            runs-on: windows-latest
+            python_platform: win32
+          - name: macOS
+            runs-on: macos-latest
+            python_platform: darwin
+        python:
+          - name: CPython 3.5
+            tox: py35
+            action: 3.5
+            docker: 3.5
+            implementation: cpython
+            major: 3
+          - name: CPython 3.6
+            tox: py36
+            action: 3.6
+            docker: 3.6
+            implementation: cpython
+            major: 3
+          - name: CPython 3.7
+            tox: py37
+            action: 3.7
+            docker: 3.7
+            implementation: cpython
+            major: 3
+          - name: CPython 3.8
+            tox: py38
+            action: 3.8
+            docker: 3.8
+            implementation: cpython
+            major: 3
+          - name: CPython 3.9
+            tox: py39
+            action: 3.9
+            docker: 3.9
+            implementation: cpython
+            major: 3
+          - name: PyPy 2.7
+            tox: pypy27
+            action: pypy-2.7
+            docker: pypy2.7
+            implementation: pypy
+            major: 2
+          - name: PyPy 3.6
+            tox: pypy36
+            action: pypy-3.6
+            docker: pypy3.6
+            implementation: pypy
+            major: 3
+          - name: PyPy 3.7
+            tox: pypy37
+            action: pypy-3.7
+            docker: pypy3.7
+            implementation: pypy
+            major: 3
+        reactor:
+          - name: default
+            tox: default
+            dependencies: default
+          - name: PyQt5
+            tox: pyqt5
+            dependencies: qt5
+          - name: PySide2
+            tox: pyside2
+            dependencies: qt5
+          - name: asyncio
+            tox: asyncio
+            dependencies: asyncio
+        task:
+          - name: Core
+            tox_task: core
+          - name: Twisted
+            tox_task: twisted
+          - name: asyncio
+            tox_task: asyncio
+          - name: Wheel
+            tox_task: wheel
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up ${{ matrix.python.name }}
+        if: job.container == ''
+        uses: actions/setup-python@v2
+        with:
+          python-version: '${{ matrix.python.action }}.0-alpha - ${{ matrix.python.action }}.X'
+          architecture: x64
+      - uses: twisted/python-info-action@v1.0.1
+      - name: Install Linux Qt5 dependencies
+        if: matrix.os.python_platform == 'linux' && matrix.reactor.dependencies == 'qt5'
+        run: |
+          apt-get update --yes
+          apt-get install --yes libgl1
+      - name: Install
+        run: |
+          pip install tox
+      - name: Test
+        run: |
+          tox -v -e "${{ matrix.python.tox }}-${{ matrix.reactor.tox }}"
+      - name: Codecov
+        run: |
+          tox -v -e codecov
+  all:
+    name: All
+    runs-on: ubuntu-latest
+    needs:
+      - tasks
+    steps:
+      - name: This
+        shell: python
+        run: |
+          import this
