@@ -184,7 +184,7 @@ jobs:
       - name: Install Python packages
         run: |
           python -m venv venv
-          venv/bin/python -m pip install --upgrade
+          venv/bin/python -m pip install --upgrade pip setuptools twine
           venv/bin/python -m pip install --upgrade twine
       - name: Maybe publish
         run: |
