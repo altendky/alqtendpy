@@ -183,10 +183,12 @@ jobs:
           path: dist
       - name: Install Python packages
         run: |
-          pip install --upgrade twine
+          python -m venv venv
+          venv/bin/python -m pip install --upgrade
+          venv/bin/python -m pip install --upgrade twine
       - name: Maybe publish
         run: |
-          python twineontag.py
+          venv/bin/python twineontag.py
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
