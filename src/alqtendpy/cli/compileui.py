@@ -19,7 +19,8 @@ import alqtendpy.compileui
 )
 @click.option('--suffix', default='_ui')
 @click.option('--encoding', default='utf-8')
-def cli(ui_paths, directories, suffix, encoding):
+@click.option('--qtpy/--no-qtpy', default=False)
+def cli(ui_paths, directories, suffix, encoding, qtpy):
     alqtendpy.compileui.compile_ui(
         file_paths=ui_paths,
         directory_paths=directories,
@@ -27,4 +28,5 @@ def cli(ui_paths, directories, suffix, encoding):
         suffix=suffix,
         encoding=encoding,
         output=click.echo,
+        qtpy=qtpy,
     )
