@@ -48,6 +48,7 @@ with open('README.rst') as f:
                 'qt5reactor',
                 'tox',
                 'twisted',
+                'twisted[windows_platform]; sys_platform == "win32"',
             ],
             'dev': [
                 'gitignoreio',
