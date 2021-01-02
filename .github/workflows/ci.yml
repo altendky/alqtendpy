@@ -13,6 +13,9 @@ on:
     # Daily at 07:13
     - cron: '13 7 * * *'
 
+env:
+  QT_DEBUG_PLUGINS: 1
+
 jobs:
   test:
     name: ${{ matrix.task.name }} ${{ matrix.os.name }} ${{ matrix.python.name }} ${{ matrix.reactor.name }}
@@ -88,8 +91,8 @@ jobs:
         if: matrix.os.python_platform == 'linux'
         run: |
           apt-get update --yes
-          apt-get install --yes libgl1
-      - name: Install
+          apt-get install --yes libgl1 libgl1-mesa-dev xvfb x11-utils libdbus-1-3 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0
+      - uses: altendky/QTBUG-88688-libxcb-util@v2      - name: Install
         run: |
           pip install tox
       - name: Test
@@ -120,7 +123,7 @@ jobs:
             major: 3
         task:
           - name: Wheel
-            tox_task: wheel
+            tox: wheel
     steps:
       - uses: actions/checkout@v2
       - name: Set up ${{ matrix.python.name }}
@@ -134,7 +137,8 @@ jobs:
         if: matrix.os.python_platform == 'linux'
         run: |
           apt-get update --yes
-          apt-get install --yes libgl1
+          apt-get install --yes libgl1 libgl1-mesa-dev xvfb x11-utils libdbus-1-3 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0
+      - uses: altendky/QTBUG-88688-libxcb-util@v2      - name: Install
       - name: Install
         run: |
           pip install tox
